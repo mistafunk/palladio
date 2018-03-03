@@ -10,6 +10,11 @@ include(${CMAKE_BINARY_DIR}/conan.cmake)
 conan_cmake_run(CONANFILE conanfile.txt BASIC_SETUP CMAKE_TARGETS BUILD missing)
 
 
+function(pld_add_dependency_poco TGT)
+	target_link_libraries(${TGT} PRIVATE CONAN_PKG::Poco)
+endfunction()
+
+
 ### PRT dependency
 
 function(pld_add_dependency_prt TGT)

@@ -2,6 +2,24 @@
 cesdk/1.9.3786@esri-rd-zurich/stable
 houdini/[>16.0.0,<16.5.0]@sidefx/stable
 catch2/2.0.1@bincrafters/stable
+Poco/1.8.1@pocoproject/stable
+
+[options]
+Poco:shared=False
+Poco:enable_xml=False
+Poco:enable_json=False
+Poco:enable_mongodb=False
+Poco:enable_pdf=False
+Poco:enable_util=True
+Poco:enable_net=True
+Poco:enable_netssl=False
+Poco:enable_netssl_win=False
+Poco:enable_crypto=False
+Poco:enable_data=False
+Poco:enable_data_sqlite=False
+Poco:enable_sevenzip=False
+Poco:enable_zip=False
+Poco:force_openssl=False
 
 [generators]
 cmake

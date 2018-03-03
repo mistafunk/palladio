@@ -83,6 +83,7 @@ endif()
 
 pld_add_dependency_prt(${PROJECT_NAME})
 pld_add_dependency_houdini(${PROJECT_NAME}) # also provides boost
+pld_add_dependency_poco(${PROJECT_NAME})
 
 
 ### setup install target
