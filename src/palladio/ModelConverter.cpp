@@ -290,7 +290,7 @@ namespace {
 AttributeMapBuilderUPtr& getBuilder(std::map<int32_t, AttributeMapBuilderUPtr>& amb, int32_t shapeID) {
 	auto it = amb.find(shapeID);
 	if (it == amb.end())
-		it = amb.emplace(shapeID, std::move(AttributeMapBuilderUPtr(prt::AttributeMapBuilder::create()))).first;
+		it = amb.emplace(shapeID, AttributeMapBuilderUPtr(prt::AttributeMapBuilder::create())).first;
 	return it->second;
 }
 

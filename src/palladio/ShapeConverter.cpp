@@ -100,7 +100,7 @@ void ShapeConverter::get(const GU_Detail* detail, const PrimitiveClassifier& pri
 
 		// merge primitive geometry inside partition (potential multi-polygon initial shape)
 		std::vector<uint32_t> indices, faceCounts, holes;
-		std::array<double,3> centroid = { 0.0, 0.0, 0.0 };
+		std::array<double,3> centroid = { { 0.0, 0.0, 0.0 } };
 		for (const auto& prim: pIt->second) {
 			if (DBG) LOG_DBG << "   -- prim index " << prim->getMapIndex() << ", type: " << prim->getTypeName() << ", id = " << prim->getTypeId().get();
 			const auto& primType = prim->getTypeId();

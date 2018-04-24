@@ -31,7 +31,7 @@ class GA_Primitive;
 class OP_Context;
 class SOP_Node;
 class PrimitiveClassifier;
-class MainAttributeHandles;
+struct MainAttributeHandles;
 class ShapeData;
 
 const UT_String PLD_RPK         = "pldRPK";
