@@ -33,7 +33,10 @@ class HoudiniConan(ConanFile):
             # files in the python subdir as only readable by root
             self.copy("*", ".", local_install, symlinks=True, excludes="python/*")
         elif self.settings.os == "Macos":
-            # TODO
+            local_install = os.getenv('HOUDINI_INSTALL') \
+                if 'HOUDINI_INSTALL' in os.environ \
+                else "/Applications/Houdini/Houdini{}".format(self.version)
+            self.copy("*", ".", local_install, symlinks=True) # TODO: filter out non-needed stuff
             pass
         else:
             raise Exception("platform not supported!")
