@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
+cmake_policy(SET CMP0068 NEW)
 
 
 ### project definition
@@ -7,6 +8,8 @@ project(palladio CXX)
 
 
 ### target definition
+
+set(CMAKE_INSTALL_RPATH "@loader_path/libcom.esri.prt.core.dylib")
 
 add_library(${PROJECT_NAME} SHARED
         PalladioMain.cpp
@@ -29,7 +32,7 @@ add_library(${PROJECT_NAME} SHARED
 		LRUCache.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-		${palladio_codec_SOURCE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/../codec
 		$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
 
@@ -77,6 +80,9 @@ elseif(PLD_MACOS)
 	elseif(${CMAKE_BUILD_TYPE} STREQUAL "Release")
 		target_compile_options(${PROJECT_NAME} PRIVATE -O3)
 	endif()
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+            INSTALL_RPATH "@loader_path")
 endif()
 
 
@@ -92,5 +98,6 @@ pld_add_dependency_houdini(${PROJECT_NAME})
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION . LIBRARY DESTINATION .)
 install(FILES ${PRT_LIBRARIES} DESTINATION .)
 install(FILES ${PRT_EXT_LIBRARIES} DESTINATION prtlib)
+#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/../codec/src/codec-build/${CMAKE_SHARED_LIBRARY_PREFIX}palladio_codec${CMAKE_SHARED_LIBRARY_SUFFIX} DESTINATION prtlib)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/../../doc DESTINATION .)
 install(FILES ${PROJECT_SOURCE_DIR}/../../README.md ${PROJECT_SOURCE_DIR}/../../LICENSE DESTINATION .)

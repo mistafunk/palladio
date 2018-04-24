@@ -23,12 +23,18 @@ endfunction()
 
 ### HOUDINI dependency
 
-list(APPEND CMAKE_PREFIX_PATH "${CONAN_HOUDINI_ROOT}/toolkit/cmake")
+if (PLD_MACOS)
+	list(APPEND CMAKE_PREFIX_PATH "${CONAN_HOUDINI_ROOT}/Frameworks/Houdini.framework/Versions/Current/Resources/toolkit/cmake")
+	find_library(HOUDINI_TBB NAMES tbb PATHS ${CONAN_HOUDINI_ROOT}/Frameworks/Houdini.framework/Versions/Current/Libraries)
+else()
+	list(APPEND CMAKE_PREFIX_PATH "${CONAN_HOUDINI_ROOT}/toolkit/cmake")
+endif()
 find_package(Houdini REQUIRED)
 
 function(pld_add_dependency_houdini TGT)
-	target_link_libraries(${TGT} PRIVATE Houdini)
-	# houdini_configure_target(${TGT})
+	target_link_libraries(${TGT} PRIVATE Houdini ${HOUDINI_TBB})
+
+	houdini_configure_target(${TGT})
 	# note: the above disabled function (provided by sidefx) does weird things with the install prefix
 endfunction()
 

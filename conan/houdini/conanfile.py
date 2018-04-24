@@ -44,4 +44,4 @@ class HoudiniConan(ConanFile):
     def package_info(self):
         self.cpp_info.libdirs = ['dsolib']
         self.cpp_info.libs = ['HoudiniUI', 'HoudiniOPZ', 'HoudiniOP3', 'HoudiniOP2',
-                              'HoudiniOP1', 'HoudiniGEO', 'HoudiniPRM', 'HoudiniUT']
+                              'HoudiniOP1', 'HoudiniGEO', 'HoudiniPRM', 'HoudiniUT', 'HoudiniAPPS3']

@@ -1,35 +1,12 @@
 cmake_minimum_required(VERSION 3.8)
+cmake_policy(SET CMP0068 NEW)
+
+
+### project definition
 
 project(palladio_root CXX)
 
-
-### platform configuration
-
-message(STATUS "CMAKE_SYSTEM_NAME = ${CMAKE_SYSTEM_NAME}")
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-	set(PLD_WINDOWS 1)
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-	set(PLD_LINUX 1)
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-	set(PLD_MACOS 1)
-endif()
-
-
-### toolchain configuration
-
-function(add_toolchain_definition TGT)
-	if(PLD_WINDOWS)
-		target_compile_definitions(${TGT} PRIVATE -DPLD_WINDOWS=1 -DPLD_TC_VC=1)
-	elseif(PLD_LINUX)
-		target_compile_definitions(${TGT} PRIVATE -DPLD_LINUX=1 -DPLD_TC_GCC=1)
-	elseif(PLD_MACOS)
-		target_compile_definitions(${TGT} PRIVATE -DPLD_MACOS=1 -DPLD_TC_CLANG=1)
-	endif()
-endfunction()
-
-
-### dependencies
-
+include(${CMAKE_CURRENT_LIST_DIR}/platform.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/dependencies.cmake)
 
 
@@ -37,7 +14,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/dependencies.cmake)
 
 set(PLD_VERSION_MAJOR 1)
 set(PLD_VERSION_MINOR 1)
-set(PLD_VERSION_PATCH 1)
+set(PLD_VERSION_PATCH 2)
 if(NOT PLD_VERSION_BUILD)
     set(PLD_VERSION_BUILD DEV)
 endif()
@@ -51,22 +28,15 @@ set(PLD_VERSION "${PLD_VERSION_MAJOR}.${PLD_VERSION_MINOR}.${PLD_VERSION_PATCH}\
 message(STATUS "Using PLD_VERSION = ${PLD_VERSION}")
 
 
-### setup sub-projects
-
-add_subdirectory(codec)
-add_subdirectory(palladio)
-add_dependencies(palladio palladio_codec)
-
-add_subdirectory(test EXCLUDE_FROM_ALL)
-
-
-### setup installation target
+### setup installation paths
 
 if (NOT HOUDINI_DSO_PATH)
 	if(PLD_WINDOWS)
 		set(HOUDINI_DSO_PATH "$ENV{HOMEDRIVE}$ENV{HOMEPATH}/Documents/houdini${Houdini_VERSION_MAJOR}.${Houdini_VERSION_MINOR}/dso")
-	else()
+	elseif(PLD_LINUX)
 		set(HOUDINI_DSO_PATH "$ENV{HOME}/houdini${Houdini_VERSION_MAJOR}.${Houdini_VERSION_MINOR}/dso")
+	elseif(PLD_MACOS)
+		set(HOUDINI_DSO_PATH "/Users/Shared/houdini/${Houdini_VERSION_MAJOR}.${Houdini_VERSION_MINOR}/dso")
 	endif()
 endif()
 message(STATUS "HOUDINI_DSO_PATH = ${HOUDINI_DSO_PATH}")
@@ -75,6 +45,31 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 	set (CMAKE_INSTALL_PREFIX "${HOUDINI_DSO_PATH}" CACHE PATH "default install path" FORCE )
 	message(STATUS "Set default install prefix: ${CMAKE_INSTALL_PREFIX}")
 endif()
+
+
+### setup codec dependency target
+
+# we use ExternalProject to emulate a standalone cmake run for codec as it potentially needs a different compiler
+
+include(ExternalProject)
+ExternalProject_Add(codec
+	SOURCE_DIR ${CMAKE_SOURCE_DIR}/codec
+    PREFIX ${CMAKE_BINARY_DIR}/codec
+	CMAKE_ARGS
+		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+		-DCMAKE_OSX_SYSROOT=/Applications/Xcode833.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+		-DCMAKE_CXX_COMPILER=/Applications/Xcode833.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
+		-DCMAKE_C_COMPILER=/Applications/Xcode833.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+		-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+)
+#configure_file(conanfile.py )
+
+
+### setup palladio target
+
+add_subdirectory(palladio)
+add_dependencies(palladio codec)
+#add_subdirectory(test EXCLUDE_FROM_ALL)
 
 
 ### setup package target
